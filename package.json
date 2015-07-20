@@ -1,0 +1,22 @@
+{
+  "name": "guidelines",
+  "version": "0.1.0",
+  "description": "Guidlines for Angular + Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebald/guidelines.git"
+  },
+  "author": "Sebastian Sebald <sebastian.sebald@gmail.com> (http://www.distractedbysquirrels.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sebald/guidelines/issues"
+  },
+  "homepage": "https://github.com/sebald/guidelines#readme",
+  "dependencies": {
+    "scroll-rack": "^0.4.6"
+  }
+}
