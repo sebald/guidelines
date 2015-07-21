@@ -96,3 +96,17 @@ Property 'isVillain' is missing in type '{ name: string; first_appearance: strin
 let character: ICharacter
 ```
 
+## Special types `any` and `void`
+
+TypeScript tries really hard to stay out of your way and sometimes (because of reasons) you need a variable to be flexible engough to mix and match its types. For this case, TypeScript has the `any` keyword. This type is compatible with *all other types*. Meaning that you can assign anything to a variable flagged as `any`.
+
+```typescript
+let value: any = 123;
+value = 'Hello World!';
+```
+
+Furthermore, if a function does not have a return type it should be annotated with `:void`.
+
+```typescript
+function log (str: string): void { ... }
+```
