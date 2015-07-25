@@ -38,7 +38,7 @@ The TypeScript compiler does not know about the `MARVEL_API` variable, because t
 ```typescript
 class MarvelApi {
     static fetchComics () {
-        return fetch( MARVEL_API, {
+        return fetch( MARVEL_API.comics, {
             method: 'get'
         });
     }

@@ -75,7 +75,7 @@ function power (nbr: number): number {
 
 ## Interfaces
 
-In order to create more complex types than primites (`number`, `string`, `boolean`), TypeScript also allows us to create own abstrac types in form of interfaces. An interface defines a set of properties and method signatures an object must implement. If an object adheres to an interface, it *implements* that interface.^[["What Is an Interface"](http://docs.oracle.com/javase/tutorial/java/concepts/interface.html). The Java Tutorials. Oracle]
+In order to create more complex types than primites (`number`, `string`, `boolean`), TypeScript also allows us to create own abstrac types in form of interfaces. An interface defines a set of properties and method signatures an object must implement. If an object adheres to an interface, it *implements* that interface.^[["What is an Interface"](http://docs.oracle.com/javase/tutorial/java/concepts/interface.html). The Java Tutorials. Oracle]
 
 Following the example from the [duck typing section](#duck-typing) an object describing a `character` could be defined by an interface as follows:
 
