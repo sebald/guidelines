@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/sebald/guidelines#readme",
   "dependencies": {
-    "scroll-rack": "^0.4.6"
+    "scroll-rack": "^0.5.0"
   }
 }
