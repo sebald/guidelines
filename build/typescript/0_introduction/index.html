@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Introduction</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="/preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="/typescript/0_introduction/">Introduction</a></li>
+                    <li><a href="/typescript/1_type_system/">Type System</a></li>
+                    <li><a href="/typescript/2_declaration_files/">Declaration Files</a></li>
+                    <li><a href="/typescript/3_coding_styles/">Coding Styles</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Introduction</h1>
+    	<p>Type­Script was de­signed by An­ders Hejls­berg at Mi­crosoft to help write en­ter­sprise scale JavaScript.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> It is a su­per­set of JavaScript with op­tional sta­tic typ­ing and has sup­port for ES­2015 fea­tures like <em>classes</em>, <em>arrow functions</em> and <em>template literals</em>.</p>
+<p>Many teams from large com­pa­nies have con­tin­u­ally ar­rived at the con­clu­sion that adding types en­hances qual­ity and un­der­stand­abil­ity of code.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> How­ever sta­tic typ­ing does add com­plex­ity and vi­sual clut­ter. Es­pe­cially if you need to man­u­ally spec­ify a type (like in Java). For­tu­nately Type­Script does not force you to use types and will try to in­fer as much type in­for­ma­tion as it can in or­der to give you type safety. As a re­sult Type­Script can pro­vide com­pile time type safety for your JavaScript code.</p>
+<p>Be­sides bee­ing a stronlgy-typed lan­guage, one of the biggest sell­ing points of Type­Script is the tool­ing it pro­vides. IDEs can take ada­van­tage of fea­ture like ad­vanced au­to­com­ple­tion and code nav­i­ga­tion to im­prove the de­vel­op­ment ex­pe­ri­ence. Es­pe­cially dis­play­ing er­rors that oth­er­whise would only show up once the code is de­ployed to the browser saves a lot of time and frus­ta­tion. Also, the fact that in­tel­lisense and ba­sic refac­tor­ing (e.g. re­nam­ing a sym­bol) are re­li­able makes a huge im­pact on the process of writ­ing and refac­tor­ing code.</p>
+<p>While Type­Script greatly im­proves the cod­ing ex­pe­ri­ence, it adds an ad­di­tional step to the build process. Since browsers can not in­tepret Type­Script your code has to be tran­spilled to JavaScript. But since you usu­ally have a com­plex build process that is han­dled by a task run­ner any­way the added com­plex­ity can eas­ily be solved by us­ing an ex­ist­ing plu­gin, like gulp-type­script<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://channel9.msdn.com/posts/Anders-Hejlsberg-Introducing-TypeScript">Anders Hejlsberg - Introducing TypeScript</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="http://www.2ality.com/2014/10/typed-javascript.html">Statically typed JavaScript via Microsoft TypeScript, Facebook Flow and Google AtScript</a> <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="https://github.com/ivogabe/gulp-typescript">TypeScript plugin for Gulp</a> <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Preface" href="../../preface.html">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+        <div class="Article-next">
+            <a class="Article-link" data-title="Type System" href="../1_type_system/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)">Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
+
+</body></html>
