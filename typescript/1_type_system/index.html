@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Type System</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="/preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="/typescript/0_introduction/">Introduction</a></li>
+                    <li><a href="/typescript/1_type_system/">Type System</a></li>
+                    <li><a href="/typescript/2_declaration_files/">Declaration Files</a></li>
+                    <li><a href="/typescript/3_coding_styles/">Coding Styles</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Type System</h1>
+    	<p>JavaScript is a dy­nam­i­cally typed lan­guage, which means it al­lows vari­ables and ob­jects und change their prop­er­ties and be­hav­iour on run­time. The fol­low­ing ex­am­ple is valid JavaScript:</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">let</span> value = <span class="hljs-number">123</span>;
+value = <span class="hljs-string">'Hello World!'</span>;
+value = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"> options </span>) </span>{ ... };
+</code></pre>
+<p>This is a very sim­ple ex­am­ple and could be jus­ti­fied. How­ever, as soon as your ap­pli­ca­tion and team grows, code like this could eas­ily be over­looked and cause er­rors that are hard to find and fix be­cause they only oc­cur on run­time. This is es­pe­cially true if func­tions need a cer­tain call sig­na­ture (line 3) and there is no doc­u­men­ta­tion on how to use it. If you are al­lowed to as­sign var­i­ous types to the same vari­able, you can not be cer­tain later on what type the vari­able is and alawys have to check its type.</p>
+<h2 id="infering-types" class="Header--withAnchor"><a href="#infering-types" aria-hidden="true">#</a>Infering Types</h2>
+<p>Type­Script tries to in­fer as much type in­for­ma­tion as it can in or­der to give to type safety and pre­vent care­less mis­takes. If you run the above snip­pet through the Type­Script com­piler, it will in­fer that the vari­able <code>value</code> has to be a <code>Number</code>. In this case the type in­for­ma­tion will be <em>implicitly</em> ap­plied by Type­Script and the com­piler will throw two er­rors:</p>
+<pre><code class="hljs bash">Type <span class="hljs-string">'string'</span> is not assignable to <span class="hljs-built_in">type</span> <span class="hljs-string">'number'</span>.
+<span class="hljs-built_in">let</span> value: number
+Type <span class="hljs-string">'(options: any) =&gt; void'</span> is not assignable to <span class="hljs-built_in">type</span> <span class="hljs-string">'number'</span>.
+<span class="hljs-built_in">let</span> value: number
+</code></pre>
+<p>Types can also be <em>explicit</em>. For this, Type­Script in­tro­duces a very sim­ple syn­tax (<a href="#annotations">see annotations</a>). There are mu­ti­ple rea­sons why you want to en­force a spe­cific type on an ob­ject. One is to en­sure the com­piler sees, what you thought it should see. An­other is to doc­u­ment your code for the next de­vel­oper who has to read it (maybe even fu­ture you!).<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> This also in­cludes us­ing your code as an API or li­brary.</p>
+<h2 id="duck-typing" class="Header--withAnchor"><a href="#duck-typing" aria-hidden="true">#</a>Duck Typing</h2>
+<p>Es­pe­cially when work­ing with com­plex ob­jects de­vel­op­ers can profit from strong typ­ing. For com­plex vari­ables Type­Script uses a method called duck-typ­ing.</p>
+<blockquote>
+<p>When I see a bird that walks like a duck and swims like a duck and quacks like a duck, I call that bird a duck.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+</blockquote>
+<p>This means the Type­Script com­piler will check if prop­er­ties have the same set of prop­er­ties. If so, they are con­sid­ered to to of the same type. To il­lus­trate this, red the fol­low­ing ex­am­ple:</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">let</span> character = {
+    name: <span class="hljs-string">'Peter Jason Quill'</span>,
+    first_appearance: <span class="hljs-string">'January, 1976'</span>
+};
+character = {
+    name: <span class="hljs-string">'Groot'</span>,
+    first_appearance: <span class="hljs-string">'November, 1960'</span>
+};
+</code></pre>
+<p>If you would try to as­sign an ob­ject to <code>character</code> that is miss­ing one of the two prop­er­ties (<code>name</code>, <code>first_appearance</code>), the com­piler would throw an er­ror. How­ever as­sig­ing an ob­ject with an ad­di­tional prop­erty is al­lowed:</p>
+<pre><code class="hljs typescript">character = {
+    name: <span class="hljs-string">'Rocket Raccoon'</span>,
+    first_appearance: <span class="hljs-string">'Summer, 1976'</span>,
+    group_affililations: <span class="hljs-string">'Guardians of the Galaxy'</span>
+};
+</code></pre>
+<h2 id="annotations" class="Header--withAnchor"><a href="#annotations" aria-hidden="true">#</a>Annotations</h2>
+<p>Type­Script uses an­no­ta­tions to en­force a cer­tain type on a vari­able, in­clud­ing ar­rays. Func­tion ar­gu­ments and re­turn val­ues can also be sta­t­i­cally typed. The fol­low­ing ex­am­ple shows how the an­no­ta­tion syn­tax works:</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Variable</span>
+<span class="hljs-keyword">let</span> nbr: <span class="hljs-built_in">number</span> = <span class="hljs-number">2</span>;
+
+<span class="hljs-comment">// Array</span>
+<span class="hljs-keyword">let</span> stringArray: <span class="hljs-built_in">string</span>[];
+stringArray.push(<span class="hljs-string">'red'</span>);
+stringArray.push(<span class="hljs-string">'blue'</span>);
+
+<span class="hljs-comment">// Function</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">power</span> (<span class="hljs-params">nbr: <span class="hljs-built_in">number</span></span>): <span class="hljs-title">number</span> </span>{
+    <span class="hljs-keyword">return</span> nbr * nbr;
+}
+</code></pre>
+<h2 id="interfaces" class="Header--withAnchor"><a href="#interfaces" aria-hidden="true">#</a>Interfaces</h2>
+<p>In or­der to cre­ate more com­plex types than prim­ites (<code>number</code>, <code>string</code>, <code>boolean</code>), Type­Script also al­lows us to cre­ate own ab­strac types in form of in­ter­faces. An in­ter­face de­fines a set of prop­er­ties and method sig­na­tures an ob­ject must im­ple­ment. If an ob­ject ad­heres to an in­ter­face, it <em>implements</em> that in­ter­face.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+<p>Fol­low­ing the ex­am­ple from the <a href="#duck-typing">duck typing section</a> an ob­ject de­scrib­ing a <code>character</code> could be de­fined by an in­ter­face as fol­lows:</p>
+<pre><code class="hljs typescript"><span class="hljs-interface"><span class="hljs-keyword">interface</span> ICharacter </span>{
+    name: <span class="hljs-built_in">string</span>;
+    first_appearance: <span class="hljs-built_in">string</span>;
+    group_affililations?: <span class="hljs-built_in">string</span>;
+    isVillain(): <span class="hljs-built_in">boolean</span>;
+}
+</code></pre>
+<p>To show all pos­si­ble use cases a method <code>isVillain()</code> was added. If you would try to use an ob­ject from the <a href="#duck-typing">duck typing section</a> with the <code>ICharacter</code> in­ter­face the com­piler would throw an er­ror be­cause none of the <code>character</code> vari­able ime­ple­ments the in­ter­face.</p>
+<pre><code class="hljs bash">Type <span class="hljs-string">'{ name: string; first_appearance: string; }'</span> is not assignable to <span class="hljs-built_in">type</span> <span class="hljs-string">'ICharacter'</span>.
+Property <span class="hljs-string">'isVillain'</span> is missing <span class="hljs-keyword">in</span> <span class="hljs-built_in">type</span> <span class="hljs-string">'{ name: string; first_appearance: string; }'</span>.
+<span class="hljs-built_in">let</span> character: ICharacter
+</code></pre>
+<h2 id="special-types-any-and-void" class="Header--withAnchor"><a href="#special-types-any-and-void" aria-hidden="true">#</a>Special types <code>any</code> and <code>void</code></h2>
+<p>Type­Script tries re­ally hard to stay out of your way and some­times (be­cause of rea­sons) you need a vari­able to be flex­i­ble en­gough to mix and match its types. For this case, Type­Script has the <code>any</code> key­word. This type is com­pat­i­ble with <em>all other types</em>. Mean­ing that you can as­sign any­thing to a vari­able flagged as <code>any</code>.</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">let</span> value: <span class="hljs-built_in">any</span> = <span class="hljs-number">123</span>;
+value = <span class="hljs-string">'Hello World!'</span>;
+</code></pre>
+<p>Fur­ther­more, if a func­tion does not have a re­turn type it should be an­no­tated with <code>:void</code>.</p>
+<pre><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">log</span> (<span class="hljs-params">str: <span class="hljs-built_in">string</span></span>): <span class="hljs-title">void</span> </span>{ ... }
+</code></pre>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="http://basarat.gitbooks.io/typescript/">TypeScript Deep Dive</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Heim, Michael (2007). <a href="http://books.google.com/books?id=j7zds6xx7S0C&amp;pg=PA68&amp;dq=%22james+Riley%22+OR+%22James+Whitcomb+Riley%22+bird++duck&amp;num=100">Exploring Indiana Highways</a> p. 68. <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="http://docs.oracle.com/javase/tutorial/java/concepts/interface.html">"What is an Interface"</a>. The Java Tu­to­ri­als. Or­a­cle <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Introduction" href="../0_introduction/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+        <div class="Article-next">
+            <a class="Article-link" data-title="Declaration Files" href="../2_declaration_files/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)">Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
+
+</body></html>

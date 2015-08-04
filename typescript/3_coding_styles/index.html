@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Coding Styles</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="/preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="/typescript/0_introduction/">Introduction</a></li>
+                    <li><a href="/typescript/1_type_system/">Type System</a></li>
+                    <li><a href="/typescript/2_declaration_files/">Declaration Files</a></li>
+                    <li><a href="/typescript/3_coding_styles/">Coding Styles</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Coding Styles</h1>
+    	<p>In this chap­ter you’ll find some high-level con­ven­tions for cod­ing in Type­Script. If you’re look­ing for a thor­ough guide, check out ido­matic.js<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> or AirBn­B’s ES6 style guide<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>.</p>
+<h2 id="types" class="Header--withAnchor"><a href="#types" aria-hidden="true">#</a>Types</h2>
+<ul>
+<li>Arrays should be defined like this <code>type[]</code>, not <code>Array&lt;type&gt;</code>.</li>
+<li>Create an <code>interface</code> rather than using the <code>any</code> type.<br>
+The <code>any</code> keyword should only be used if absolutely necessary.</li>
+</ul>
+<h2 id="naming" class="Header--withAnchor"><a href="#naming" aria-hidden="true">#</a>Naming</h2>
+<ul>
+<li><code>const</code> should use UPPEER_SNAKE_CASE<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></li>
+<li><code>class</code> names should always be written in PascalCase.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></li>
+<li><code>interface</code> names should alawys start with a capital “I” and use PascalCase, e.g. <code>IMarvelCharacter</code>.</li>
+</ul>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://github.com/rwaldron/idiomatic.js">Principles of Writing Consistent, Idiomatic JavaScript</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="https://github.com/airbnb/javascript">Airbnb JavaScript Style Guide</a> <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="https://en.wikipedia.org/wiki/Snake_case">Snake Case</a> <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a href="https://msdn.microsoft.com/en-us/library/x2dbyw72(v=vs.71).aspx">Capitalization Styles</a> <a href="#fnref4" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Declaration Files" href="../2_declaration_files/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)">Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
+
+</body></html>

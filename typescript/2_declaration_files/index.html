@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Declaration Files</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="/preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="/typescript/0_introduction/">Introduction</a></li>
+                    <li><a href="/typescript/1_type_system/">Type System</a></li>
+                    <li><a href="/typescript/2_declaration_files/">Declaration Files</a></li>
+                    <li><a href="/typescript/3_coding_styles/">Coding Styles</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Declaration Files</h1>
+    	<p>It would be a shame if we could not use the myr­iad of ex­ist­ing JavaScript li­braries, frame­works and npm mod­ules in con­junc­tion with our Type­Script code. In or­der to seam­lessly in­te­grate ex­ter­nal li­braries with your Type­Script pro­ject you have to make use of <em>declaration files</em>.</p>
+<p>De­c­la­ra­tion files are marked with a <code>.d.ts</code> ex­ten­sion and de­scribe the in­ter­face of an JavaScript libarby. This al­lows the com­piler to pro­vide you with the same fea­tures, like in­tel­lisense or com­pile time er­ror mes­sages, as if the third-party code was writ­ten in Type­Script.</p>
+<p>Ac­tu­ally, every in­stal­la­tion of Type­Script ships with a file called <code>lib.d.ts</code>. The files con­tains the Ec­maScript APIs, like <code>window</code>, <code>Object</code> or <code>Math</code>. This is an prime ex­am­ple how de­c­la­ra­tion files can fill in the gaps for JavaScript code Type­Script does not know about.</p>
+<h2 id="definitely-typed" class="Header--withAnchor"><a href="#definitely-typed" aria-hidden="true">#</a>Definitely Typed</h2>
+<p>De­f­i­n­i­tion files are nice and all, but on the other hand there are re­quired when­ever you want to work with a third-party li­brary. For­tu­nately, soon af­ter Type­Script was re­leased Boris Yankov started the <em>DefinitelyTyped</em> pro­ject to host de­c­la­ra­tion files for pop­u­lar JavaScript li­braries. There are al­ready more than 2,000 de­f­i­n­i­tions for ex­ter­nal libaries, so if in doubt head over to <a href="http://definitelytyped.org/">definitelytyped.org</a>!</p>
+<p>For conce­nience there is also a <code>tsd</code> pack­age, which can be in­stalled via <code>npm</code>. The pack­age makes it pos­si­ble to in­stall de­c­la­ra­tion files from the <em>DefinitelyTyped</em> re­spos­i­tory di­rectly from the con­sole.<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> Af­ter the in­stal­la­tion you can use <code>query</code> to search and <code>install</code> to in­stall a de­c­la­ra­tion file to your pro­ject. De­c­la­ra­tion files will be in­stalled in a <code>typings</code> di­rec­tory by de­fault. You can point your IDE of choice to this di­rec­tory and Type­Scrip­t’s com­piler will do its magic.</p>
+<h2 id="writing-dts-files" class="Header--withAnchor"><a href="#writing-dts-files" aria-hidden="true">#</a>Writing <code>.d.ts</code> Files</h2>
+<p>Even though there are tons of de­c­la­ra­tion files if you want to use a rather un­kown li­brary or if you are the au­thor of li­brary there is a chance that no <code>.d.ts.</code> file ex­ists for that li­brary. In this case you have to write you own de­c­la­ra­tion file. For more in­for­ma­tions on how to write de­c­la­ra­tion files visit the <a href="http://www.typescriptlang.org/Handbook#writing-dts-files">TypeScript Handbook</a>.</p>
+<p>An­other rea­son to write your own <code>.d.ts</code> files is when you want to work with global vari­ables. For in­stance the main HTML file of your SPA<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> may con­tain in­for­ma­tion about API end­points, which are in­serted by the server:</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
+    ...
+    <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="actionscript">
+        <span class="hljs-keyword">var</span> MARVEL_API = {
+            root: <span class="hljs-string">"https://gateway.marvel.com/"</span>,
+            characters: <span class="hljs-string">"/v1/public/characters/:id"</span>,
+            comics: <span class="hljs-string">"/v1/public/comics/:id"</span>
+        };
+    </span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span>
+</code></pre>
+<p>The Type­Script com­piler does not know about the <code>MARVEL_API</code> vari­able, be­cause this piece of code is out­side the Type­Scrip­t’s scope. Thus, try­ing to ac­cess the vari­able with the fol­low­ing ex­am­ple will re­sult in an er­ror.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">class</span> MarvelApi {
+    <span class="hljs-keyword">static</span> fetchComics () {
+        <span class="hljs-keyword">return</span> fetch( MARVEL_API.comics, {
+            method: <span class="hljs-string">'get'</span>
+        });
+    }
+}
+</code></pre>
+<p>To solve the prob­lem we need to cre­ate a cus­tom de­c­la­ra­tion file and save it some­where the Type­Script com­piler can find it. The con­tent of our cus­tom de­c­la­ra­tion file should be this:</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">var</span> MARVEL_API: {
+    root: <span class="hljs-built_in">string</span>,
+    characters: <span class="hljs-built_in">string</span>,
+    comics: <span class="hljs-built_in">string</span>
+}
+</code></pre>
+<p>Note that the Type­Script com­piler will scan your source di­rec­to­ries for <code>.d.ts</code> files and au­to­mat­i­cally in­clude them.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://github.com/Definitelytyped/tsd"><code>tsd</code> package on Github</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>Sin­gle Page Ap­pli­ca­tion <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>As­sum­ing the de­c­la­ra­tion file for <a href="https://github.com/borisyankov/DefinitelyTyped/blob/master/whatwg-fetch/whatwg-fetch.d.ts"><code>fetch</code></a> is pro­vided. <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Type System" href="../1_type_system/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+        <div class="Article-next">
+            <a class="Article-link" data-title="Coding Styles" href="../3_coding_styles/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)">Tue Aug 04 2015 15:36:13 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
+
+</body></html>
