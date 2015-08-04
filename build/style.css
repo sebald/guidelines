@@ -498,7 +498,7 @@ li > p:last-child {
 code:not(.hljs) {
   padding: 0.1875rem 0.3125rem;
   border-radius: 2px;
-  background: #f1f1f1;
+  background: #f9f9f9;
   font-size: 70%;
 }
 
