@@ -19,7 +19,7 @@
   "devDependencies": {
     "del": "^1.2.0",
     "gulp": "^3.9.0",
-    "gulp-gh-pages": "^0.5.2",
+    "gulp-run": "^1.6.10",
     "scroll-rack": "^0.5.1"
   }
 }

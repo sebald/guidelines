@@ -1,7 +1,7 @@
 'use strict';
 
 var gulp = require('gulp'),
-    pages = require('gulp-gh-pages'),
+    run = require('gulp-run'),
 
     del = require('del'),
     scrollrack = require('scroll-rack');
@@ -43,7 +43,7 @@ gulp.task('build', function ( done ) {
 /**
  * Generate Github Pages
  */
-gulp.task('release', ['build'], function () {
-    gulp.src(path.dest + '/**/*')
-        .pipe(pages());
+gulp.task('release', ['build'], function ( done ) {
+    run('git subtree push --prefix ' + path.dest + ' origin gh-pages')
+        .exec(done);
 });
