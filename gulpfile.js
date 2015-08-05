@@ -43,7 +43,7 @@ gulp.task('build', function ( done ) {
 /**
  * Generate Github Pages
  */
-gulp.task('release', ['build'], function ( done ) {
+gulp.task('release', function ( done ) {
     run('git subtree push --prefix ' + path.dest + ' origin gh-pages')
         .exec(done);
 });
