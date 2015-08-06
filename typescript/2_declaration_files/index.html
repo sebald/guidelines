@@ -52,7 +52,7 @@
 <pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
     ...
     <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span>&gt;</span><span class="actionscript">
-        <span class="hljs-keyword">var</span> MARVEL_API = {
+        <span class="hljs-keyword">var</span> MARVEL_API_URL = {
             root: <span class="hljs-string">"https://gateway.marvel.com/"</span>,
             characters: <span class="hljs-string">"/v1/public/characters/:id"</span>,
             comics: <span class="hljs-string">"/v1/public/comics/:id"</span>
@@ -60,17 +60,17 @@
     </span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span>
 </code></pre>
-<p>The Type­Script com­piler does not know about the <code>MARVEL_API</code> vari­able, be­cause this piece of code is out­side the Type­Scrip­t’s scope. Thus, try­ing to ac­cess the vari­able with the fol­low­ing ex­am­ple will re­sult in an er­ror.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
-<pre><code class="hljs typescript"><span class="hljs-keyword">class</span> MarvelApi {
+<p>The Type­Script com­piler does not know about the <code>MARVEL_API_URL</code> vari­able, be­cause this piece of code is out­side the Type­Scrip­t’s scope. Thus, try­ing to ac­cess the vari­able with the fol­low­ing ex­am­ple will re­sult in an er­ror.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">class</span> MarvelApiService {
     <span class="hljs-keyword">static</span> fetchComics () {
-        <span class="hljs-keyword">return</span> fetch( MARVEL_API.comics, {
+        <span class="hljs-keyword">return</span> fetch( MARVEL_API_URL.comics, {
             method: <span class="hljs-string">'get'</span>
         });
     }
 }
 </code></pre>
 <p>To solve the prob­lem we need to cre­ate a cus­tom de­c­la­ra­tion file and save it some­where the Type­Script com­piler can find it. The con­tent of our cus­tom de­c­la­ra­tion file should be this:</p>
-<pre><code class="hljs typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">var</span> MARVEL_API: {
+<pre><code class="hljs typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">var</span> MARVEL_API_URL: {
     root: <span class="hljs-built_in">string</span>,
     characters: <span class="hljs-built_in">string</span>,
     comics: <span class="hljs-built_in">string</span>
@@ -110,7 +110,7 @@
         <footer-push></footer-push>
     </main>
     <footer>
-        <time datetime="Wed Aug 05 2015 00:29:35 GMT+0200 (CEST)">Wed Aug 05 2015 00:29:35 GMT+0200 (CEST)</time>
+        <time datetime="Thu Aug 06 2015 11:02:54 GMT+0200 (CEST)">Thu Aug 06 2015 11:02:54 GMT+0200 (CEST)</time>
     </footer>
 
     
