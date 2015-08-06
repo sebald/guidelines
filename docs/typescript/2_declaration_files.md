@@ -24,7 +24,7 @@ Another reason to write your own `.d.ts` files is when you want to work with glo
 <body>
     ...
     <script type="text/javascript">
-        var MARVEL_API = {
+        var MARVEL_API_URL = {
             root: "https://gateway.marvel.com/",
             characters: "/v1/public/characters/:id",
             comics: "/v1/public/comics/:id"
@@ -33,12 +33,12 @@ Another reason to write your own `.d.ts` files is when you want to work with glo
 </body>
 ```
 
-The TypeScript compiler does not know about the `MARVEL_API` variable, because this piece of code is outside the TypeScript's scope. Thus, trying to access the variable with the following example will result in an error.^[Assuming the declaration file for [`fetch`](https://github.com/borisyankov/DefinitelyTyped/blob/master/whatwg-fetch/whatwg-fetch.d.ts) is provided.]
+The TypeScript compiler does not know about the `MARVEL_API_URL` variable, because this piece of code is outside the TypeScript's scope. Thus, trying to access the variable with the following example will result in an error.^[Assuming the declaration file for [`fetch`](https://github.com/borisyankov/DefinitelyTyped/blob/master/whatwg-fetch/whatwg-fetch.d.ts) is provided.]
 
 ```typescript
-class MarvelApi {
+class MarvelApiService {
     static fetchComics () {
-        return fetch( MARVEL_API.comics, {
+        return fetch( MARVEL_API_URL.comics, {
             method: 'get'
         });
     }
@@ -48,7 +48,7 @@ class MarvelApi {
 To solve the problem we need to create a custom declaration file and save it somewhere the TypeScript compiler can find it. The content of our custom declaration file should be this:
 
 ```typescript
-declare var MARVEL_API: {
+declare var MARVEL_API_URL: {
 	root: string,
 	characters: string,
 	comics: string

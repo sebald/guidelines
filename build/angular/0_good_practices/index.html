@@ -126,12 +126,72 @@ angular
 }
 </code></pre>
 <p>So make your­self a fa­vor and al­ways use <code>vm</code> to ref­er­ence your con­troller’s con­text. Be­cause it com­monly used by An­gu­lar de­vel­op­ers it will be eas­ier for other peo­ple to rea­son about your code.</p>
-<hr>
-<p><strong>TODO</strong></p>
-<ul>
-<li>use directive controller whenever possible</li>
-<li>controllers should never directly request stuff from the server → <a href="https://github.com/johnpapa/angular-styleguide#defer-controller-logic-to-services">https://github.com/johnpapa/angular-styleguide#defer-controller-logic-to-services</a></li>
-</ul>
+<h2 id="use-controllers-for-directive-logic" class="Header--withAnchor"><a href="#use-controllers-for-directive-logic" aria-hidden="true">#</a>Use controllers for directive logic</h2>
+<p>Look­ing at <code>$compile</code><sup class="footnote-ref"><a href="#fn10" id="fnref10">[10]</a></sup> you have a lot of op­tions to de­fine the logic for your di­rec­tive. Namely the <code>compile</code>, <code>link</code> or <code>controller</code> meth­ods. If you want to gen­er­ate a dy­namic tem­plate even us­ing the <code>template</code> prop­erty to­gether with a func­tion may have its mer­its.</p>
+<p>But most of the time cre­at­ing a con­troller will suf­fice and since An­gu­lar 1.3 bind­ing prop­er­ties to a di­rec­tive’s con­troller is very con­ve­nient (see <a href="#directives">above</a>). Only in a few cases you have to use other op­tions. An ex­am­ple for this is the <code>ngModelController</code>, which reg­is­ters it­self in the <code>preLink</code> phase with a par­ent <code>ngFormController</code>.<sup class="footnote-ref"><a href="#fn11" id="fnref11">[11]</a></sup></p>
+<p>An im­por­tant ben­e­fit of putting all logic in a con­troller is testa­bil­ity. It is very easy to iso­late and thus thor­oughly test a con­troller be­cause you have full con­trol over the in­jected ar­gu­ments. In or­der to test <code>compile</code> or <code>link</code> meth­ods you ei­ther have to setup the whole di­rec­tive or need a hold of the full di­rec­tive de­f­i­n­i­tion ob­ject. The later can be done by in­ject­ing the di­rec­tive as a de­pen­dency in your test suite.</p>
+<p>Test­ing the <code>compile</code> or <code>link</code> of the <code>&lt;say-hello&gt;</code> with Jas­mine<sup class="footnote-ref"><a href="#fn12" id="fnref12">[12]</a></sup> con­troller can be done like this:</p>
+<pre><code class="hljs typescript">define(<span class="hljs-string">'&lt;say-hello&gt;'</span>, () =&gt; {
+    <span class="hljs-keyword">var</span> ddo;
+
+    beforeEach(<span class="hljs-module"><span class="hljs-keyword">module</span>('app'));
+    beforeEach(inject( ( 'sayHelloDirective' ) =&gt; </span>{
+        ddo = sayHelloDirective[<span class="hljs-number">0</span>]; <span class="hljs-comment">// Array of "sayHello` directives</span>
+    });
+
+    it(<span class="hljs-string">'should have a linkt function'</span>, () =&gt; {
+        expect(ddo.link).toEqual(jasmine.any(<span class="hljs-built_in">Function</span>));
+    });
+});
+</code></pre>
+<h2 id="slim-and-focused-controllers" class="Header--withAnchor"><a href="#slim-and-focused-controllers" aria-hidden="true">#</a>Slim and focused Controllers</h2>
+<p>In or­der to keep your code DRY<sup class="footnote-ref"><a href="#fn13" id="fnref13">[13]</a></sup> you should de­fer ap­pli­ca­tion logic into ser­vices. This way you have reusable pieces and your con­trollers are slim, fo­cused and main­tan­able.<sup class="footnote-ref"><a href="#fn14" id="fnref14">[14]</a></sup></p>
+<p>A com­mon case for this is fetch­ing data from the server. In­stead of us­ing the <code>$http</code> ser­vices in­side a con­troller the im­ple­men­ta­tion de­tails should be hid­den away in a seper­ate ser­vice. This is es­pe­cially true if the JSON re­sponse needs some ad­di­tional trans­for­ma­tions be­fore you can use it as model.</p>
+<p>Re­call the <code>MarvelApiService</code> from the Type­Script sec­tion. When you re­quest data from the Mar­vel API you will get a lot of ad­di­tional in­for­ma­tion be­sides the “real” data you re­quested. Us­ing the whole JSON re­quest as model may not be what you want and if you do not have a ded­i­cated ser­vice, which does the trans­for­ma­tions for you, pars­ing the JSON has to be done in every sin­gle con­troller you re­quest data from the API.</p>
+<p>The fol­low­ing code snip­pets shows how a con­troller should <em>not</em> be build and what a <em>good alternative</em> could look like:</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Bad</span>
+<span class="hljs-keyword">class</span> MarvelController ( $http, MARVEL_API_URL ) {
+    <span class="hljs-keyword">var</span> vm = <span class="hljs-keyword">this</span>;
+
+    <span class="hljs-comment">// Exports</span>
+    vm.character_list = [];
+    vm.fetchCharacterList = fetchCharacterList;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetchCharacterList</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">let</span> url = MARVEL_API_URL.base + MARVEL_API_URL.characters
+            .replace(<span class="hljs-regexp">/:id$/</span>, <span class="hljs-string">''</span>);
+
+        <span class="hljs-keyword">return</span> $http.get(url)
+            .then( (reponse) =&gt; {
+                <span class="hljs-comment">// Not kidding, that's the property</span>
+                <span class="hljs-comment">// with the list of characters.</span>
+                vm.character_list = reponse.data.data.results;
+            })
+            .catch( (err) =&gt; {
+                <span class="hljs-comment">// Handle error</span>
+            });
+    }
+}
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Good</span>
+<span class="hljs-keyword">class</span> MarvelController ( MarvelApiService ) {
+    <span class="hljs-keyword">var</span> vm = <span class="hljs-keyword">this</span>;
+
+    <span class="hljs-comment">// Exports</span>
+    vm.character_list = [];
+    vm.fetchCharacterList = fetchCharacterList;
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fetchCharacterList</span> (<span class="hljs-params"></span>) </span>{
+        <span class="hljs-keyword">return</span> MarvelApiService.getCharacters()
+            .then( (list) =&gt; {
+                vm.character_list = list;
+            });
+       <span class="hljs-comment">// Error is handled by the service</span>
+    }
+}
+</code></pre>
+<p>As you can see, the con­troller not only has to deal with the server re­sponse, but also us­ing the cor­rect URL and han­dling any er­ror that may oc­curs dur­ing the API call. Whereas in the sec­ond ex­am­ple only the <code>MarvelApiService</code> has to be in­jected. The con­troller does not care about the ex­act URL of the end­point. Also, any er­rors that oc­cur will be han­dled by the ser­vice.</p>
+<p>In ad­di­tion, if you move com­plex logic into a ser­vice it is much eas­ier to ad­just your code to any (third-party) API changes. The al­ter­na­tive would be to change every con­troller that uses the API. A very er­ror-prone task if you have a large ap­pli­ca­tion with many calls to that API.</p>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
@@ -153,6 +213,16 @@ angular
 </li>
 <li id="fn9" class="footnote-item"><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">MDN - <code>Function.prototype.bind()</code></a> <a href="#fnref9" class="footnote-backref">↩</a></p>
 </li>
+<li id="fn10" class="footnote-item"><p><a href="https://docs.angularjs.org/api/ng/service/$compile">Angular Documentation - <code>$compile</code></a> <a href="#fnref10" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn11" class="footnote-item"><p><a href="http://juristr.com/blog/2015/07/learning-ng-prepare-ng2/">Preparing for Angular 2</a> <a href="#fnref11" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn12" class="footnote-item"><p><a href="http://jasmine.github.io/">Jasmine - Behaviour-Driven JavaScript</a> <a href="#fnref12" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn13" class="footnote-item"><p><a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Wikipedia - Don't repeat yourself</a> <a href="#fnref13" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn14" class="footnote-item"><p><a href="https://github.com/johnpapa/angular-styleguide#defer-controller-logic-to-services">John Papa - Angular Styleguide: Defer Controller Logic to Services</a> <a href="#fnref14" class="footnote-backref">↩</a></p>
+</li>
 </ol>
 </section>
 
@@ -170,7 +240,7 @@ angular
         <footer-push></footer-push>
     </main>
     <footer>
-        <time datetime="Wed Aug 05 2015 00:29:35 GMT+0200 (CEST)">Wed Aug 05 2015 00:29:35 GMT+0200 (CEST)</time>
+        <time datetime="Thu Aug 06 2015 11:02:54 GMT+0200 (CEST)">Thu Aug 06 2015 11:02:54 GMT+0200 (CEST)</time>
     </footer>
 
     

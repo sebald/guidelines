@@ -116,8 +116,86 @@ function SomeController () {
 
 So make yourself a favor and always use `vm` to reference your controller's context. Because it commonly used by Angular developers it will be easier for other people to reason about your code.
 
----
-**TODO**
+## Use controllers for directive logic
 
-- use directive controller whenever possible
-- controllers should never directly request stuff from the server --> https://github.com/johnpapa/angular-styleguide#defer-controller-logic-to-services
+Looking at `$compile`^[[Angular Documentation - `$compile`](https://docs.angularjs.org/api/ng/service/$compile)] you have a lot of options to define the logic for your directive. Namely the `compile`, `link` or `controller` methods. If you want to generate a dynamic template even using the `template` property together with a function may have its merits.
+
+But most of the time creating a controller will suffice and since Angular 1.3 binding properties to a directive's controller is very convenient (see [above](#directives)). Only in a few cases you have to use other options. An example for this is the `ngModelController`, which registers itself in the `preLink` phase with a parent `ngFormController`.^[[Preparing for Angular 2](http://juristr.com/blog/2015/07/learning-ng-prepare-ng2/)]
+
+An important benefit of putting all logic in a controller is testability. It is very easy to isolate and thus thoroughly test a controller because you have full control over the injected arguments. In order to test `compile` or `link` methods you either have to setup the whole directive or need a hold of the full directive definition object. The later can be done by injecting the directive as a dependency in your test suite.
+
+Testing the `compile` or `link` of the `<say-hello>` with Jasmine^[[Jasmine - Behaviour-Driven JavaScript](http://jasmine.github.io/)] controller can be done like this:
+
+```typescript
+define('<say-hello>', () => {
+    var ddo;
+
+    beforeEach(module('app'));
+    beforeEach(inject( ( 'sayHelloDirective' ) => {
+        ddo = sayHelloDirective[0]; // Array of "sayHello` directives
+    });
+
+    it('should have a linkt function', () => {
+        expect(ddo.link).toEqual(jasmine.any(Function));
+    });
+});
+```
+
+## Slim and focused Controllers
+
+In order to keep your code DRY^[[Wikipedia - Don't repeat yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)] you should defer application logic into services. This way you have reusable pieces and your controllers are slim, focused and maintanable.^[[John Papa - Angular Styleguide: Defer Controller Logic to Services](https://github.com/johnpapa/angular-styleguide#defer-controller-logic-to-services)]
+
+A common case for this is fetching data from the server. Instead of using the `$http` services inside a controller the implementation details should be hidden away in a seperate service. This is especially true if the JSON response needs some additional transformations before you can use it as model.
+
+Recall the `MarvelApiService` from the TypeScript section. When you request data from the Marvel API you will get a lot of additional information besides the "real" data you requested. Using the whole JSON request as model may not be what you want and if you do not have a dedicated service, which does the transformations for you, parsing the JSON has to be done in every single controller you request data from the API.
+
+The following code snippets shows how a controller should *not* be build and what a *good alternative* could look like:
+
+```typescript
+// Bad
+class MarvelController ( $http, MARVEL_API_URL ) {
+    var vm = this;
+
+    // Exports
+    vm.character_list = [];
+    vm.fetchCharacterList = fetchCharacterList;
+
+    function fetchCharacterList () {
+        let url = MARVEL_API_URL.base + MARVEL_API_URL.characters
+            .replace(/:id$/, '');
+
+        return $http.get(url)
+            .then( (reponse) => {
+                // Not kidding, that's the property
+                // with the list of characters.
+                vm.character_list = reponse.data.data.results;
+            })
+            .catch( (err) => {
+                // Handle error
+            });
+    }
+}
+```
+
+```typescript
+// Good
+class MarvelController ( MarvelApiService ) {
+    var vm = this;
+
+    // Exports
+    vm.character_list = [];
+    vm.fetchCharacterList = fetchCharacterList;
+
+    function fetchCharacterList () {
+        return MarvelApiService.getCharacters()
+            .then( (list) => {
+                vm.character_list = list;
+            });
+       // Error is handled by the service
+    }
+}
+```
+
+As you can see, the controller not only has to deal with the server response, but also using the correct URL and handling any error that may occurs during the API call. Whereas in the second example only the `MarvelApiService` has to be injected. The controller does not care about the exact URL of the endpoint. Also, any errors that occur will be handled by the service.
+
+In addition, if you move complex logic into a service it is much easier to adjust your code to any (third-party) API changes. The alternative would be to change every controller that uses the API. A very error-prone task if you have a large application with many calls to that API.
