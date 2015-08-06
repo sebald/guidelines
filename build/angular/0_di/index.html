@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Dependency Injection</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="../../preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="../../typescript/0_introduction">Introduction</a></li>
+                    <li><a href="../../typescript/1_type_system">Type System</a></li>
+                    <li><a href="../../typescript/2_declaration_files">Declaration Files</a></li>
+                    <li><a href="../../typescript/3_decorators">Decorators</a></li>
+                    <li><a href="../../typescript/4_coding_styles">Coding Styles</a></li>
+                </ul>
+                <section-list-title>angular</section-list-title>
+                <ul>
+                    <li><a href="">Dependency Injection</a></li>
+                    <li><a href="../1_modules">Modules</a></li>
+                    <li><a href="../2_good_practices">Good Practices</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Dependency Injection</h1>
+    	<p>Since we are cod­ing in Type­Script and make heavy use of the <code>class</code> syn­tax, we can not use au­to­mated an­no­ta­tions tools, such as <code>ng-annotate</code><sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>. Man­u­ally adding de­pen­dency in­jec­tion can be done by adding a sta­tic prop­erty called <code>$inject</code> to our classes (see snip­pet be­low), which would con­form the An­gu­lar 1.x de­pen­ceny in­jec­tion an­no­ta­tion.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">class</span> MarvelApiService {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> $inject = [<span class="hljs-string">'$http'</span>, <span class="hljs-string">'$q'</span>];
+
+    <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>(
+        private $http::ng.IHttpService
+        private $q: ng.IQService
+    ) </span>{
+        <span class="hljs-comment">// Code goes here</span>
+    }
+}
+</code></pre>
+<p>Us­ing dec­o­ra­tors is an­other more de­clar­a­tive way of adding de­pen­dency in­jec­tion to your classes (for an in­tro­duc­tion of dec­o­ra­tors see the Type­Script sec­tion). Be­cause we want to dec­o­rate classes and their meth­ods we have to con­form both the <code>ClassDecorator</code> and <code>MethodDecorator</code> in­ter­face. The be­low code snip­pet is an ex­am­ple im­ple­men­ta­tion.</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">inject</span> (<span class="hljs-params">...dependencies:<span class="hljs-built_in">string</span>[]</span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">decorator</span> (<span class="hljs-params">
+        target:<span class="hljs-built_in">Function</span>,
+        key?:<span class="hljs-built_in">string</span>|symbol,
+        descriptor?:TypedPropertyDescriptor&lt;<span class="hljs-built_in">any</span>&gt;
+    </span>) </span>{
+        <span class="hljs-comment">// If "descriptor" decorate</span>
+        <span class="hljs-comment">// -&gt; class method, otherwhise</span>
+        <span class="hljs-comment">// -&gt; class</span>
+        <span class="hljs-keyword">var</span> receiver = descriptor ? descriptor.value : target;
+        receiver.$inject = dependencies;
+    }
+}
+</code></pre>
+<p>In­ject­ing de­pen­den­cies can then be done by sim­ply prepend­ing a <code>class</code> or a class method with <code>@inject</code>. The dec­o­ra­tor ac­cepts any num­ber of string ar­gu­ments. In­ject­ing the <code>MarvelApiService</code> would look like this:</p>
+<pre><code class="hljs typescript">@inject(<span class="hljs-string">'$http'</span>, <span class="hljs-string">'$q'</span>)
+<span class="hljs-keyword">class</span> MarvelApiService {
+    <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>(
+        private $http::ng.IHttpService
+        private $q: ng.IQService
+    ) </span>{
+        <span class="hljs-comment">// Code goes here</span>
+    }
+}
+</code></pre>
+<p>It may not look like a big im­prove­ment ofer the <code>static</code> prop­erty syn­tax, but you’ll no­tice it when you have mulit­ple func­tions with mul­ti­ple de­pen­den­cies.</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://github.com/olov/ng-annotate">ng-anotate on Github</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="https://docs.angularjs.org/guide/di#-inject-property-annotation">Angular Documentation - Dependency Injection</a> <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Coding Styles" href="../../typescript/4_coding_styles/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+        <div class="Article-next">
+            <a class="Article-link" data-title="Modules" href="../1_modules/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Thu Aug 06 2015 16:52:17 GMT+0200 (CEST)">Thu Aug 06 2015 16:52:17 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    
+
+</body></html>
