@@ -422,7 +422,8 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   font-family: "Montserrat", "Segeo UI", "Helvetica", "Verdana", sans-serif;
   line-height: 1.2;
 }
@@ -440,12 +441,20 @@ h1 {
 }
 
 h2 {
-  font-size: 2.125rem;
+  font-size: 2.25rem;
   margin: 4.375rem 0 0.25rem;
 }
 
-h3 {
+h3,
+h4 {
   margin-bottom: 0.25rem;
+}
+
+@media (min-width: 60em) {
+  h4 {
+    margin-top: 3rem;
+    font-size: 1.25rem;
+  }
 }
 
 p,
@@ -808,12 +817,17 @@ footer {
 }
 
 h2.Header--withAnchor > a {
-  top: 0.1875rem;
+  top: 0.25rem;
   font-size: 1.625rem;
 }
 
 h3.Header--withAnchor > a {
-  top: -0.0625rem;
+  top: 0.125rem;
+  font-size: 1.25rem;
+}
+
+h4.Header--withAnchor > a {
+  top: -0.125rem;
   font-size: 1.25rem;
 }
 
