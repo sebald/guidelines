@@ -2,7 +2,7 @@
 title: Decorators
 ---
 
-Decorators were introduced in TypeScript 1.5^[[What's new in TypeScript](https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#decorators)] and are also porposed for ES2016.^[[Yehuda Katz - JavaScript Decorators](https://github.com/wycats/javascript-decorators)]
+Decorators were introduced in TypeScript 1.5^[[What's new in TypeScript](https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#decorators)] and are also porposed for ES2016 by Yehuda Katz.^[[Yehuda Katz - JavaScript Decorators](https://github.com/wycats/javascript-decorators)]
 
 ## TODO
 

@@ -38,6 +38,8 @@ export function inject (...dependencies:string[]) {
 Injecting dependencies can then be done by simply prepending a `class` or a class method with `@inject`. The decorator accepts any number of string arguments. Injecting the `MarvelApiService` would look like this:
 
 ```typescript
+impport { inject } from 'utils/decorators';
+
 @inject('$http', '$q')
 class MarvelApiService {
     constructor(

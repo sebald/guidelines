@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Modules</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="../../preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="../../typescript/0_introduction">Introduction</a></li>
+                    <li><a href="../../typescript/1_type_system">Type System</a></li>
+                    <li><a href="../../typescript/2_declaration_files">Declaration Files</a></li>
+                    <li><a href="../../typescript/3_decorators">Decorators</a></li>
+                    <li><a href="../../typescript/4_coding_styles">Coding Styles</a></li>
+                </ul>
+                <section-list-title>angular</section-list-title>
+                <ul>
+                    <li><a href="">Modules</a></li>
+                    <li><a href="../2_good_practices">Good Practices</a></li>
+                    <li><a href="../1_di">Dependency Injection</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Modules</h1>
+    	<p>Back in 2009 when An­gu­lar was cre­ated there was no con­ven­tion for im­port­ing files in JavaScript. There­fore An­gu­lar 1.x uses its own syn­tax to reg­is­ter mod­ules (<code>angular.module</code>), which does not con­form the ES­2015 mod­ule syn­tax (<code>import</code>, <code>export</code>).<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></p>
+<p>For­tu­nately both mod­ule load­ers are com­pat­i­ble and we can use ES­2015 mod­ules to fur­ther im­prove our code base. In ad­di­tion, us­ing the ES­2015 mod­ules syn­tax will make it eas­ier for us to mi­grate to An­gu­lar 2, once its ready.</p>
+<p>It is best to put the ap­pli­ca­tion logic and mod­ule reg­is­tra­tion into seper­ate files. This way it will be eas­ier to rea­son about the struc­ture of your ap­pli­ca­tion and makes test­ing in­di­vid­ual mod­ules even bet­ter. At a later point you even might re­move the files that reg­is­ter as a An­gu­lar mod­ule and only use ES­2015 mod­ule syn­tax.</p>
+<p>In or­der to il­lus­trate this re­call the <code>MarvelApiService</code> from the Type­Script chap­ter. If you have the ser­vice in a file named <code>marve-api.service.ts</code> and a HTTP in­ter­cep­tor in an­other files called <code>marvel-key.interceptor.ts</code> im­port­ing these files into an An­gu­lar mod­ule, lo­cated in <code>marvel.module.ts</code>, looks like this:</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">import</span> angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> MarvelApiService from <span class="hljs-string">'./marvel-api.service'</span>;
+<span class="hljs-keyword">import</span> MarvelKeyInterceptor from <span class="hljs-string">'./marvel-key.interceptor'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'marvel'</span>, [])
+    .service(<span class="hljs-string">'MarvelApiService'</span>, MarvelApiService)
+    .config([<span class="hljs-string">'$httpProvider'</span>, ( provider:ng.IHttpProvider ) =&gt;  {
+        provider.interceptors.push(() =&gt; <span class="hljs-keyword">new</span> MarvelKeyInterceptor());
+    }]);
+</code></pre>
+<p>Load­ing other An­gu­lar mod­ules as de­pen­den­cies is also much sim­pler, be­cause you do not have to re­mem­ber their names. If you need the <code>marvel</code> mod­ule as a de­pen­dency you can do the fol­low­ing in or­der to re­quire it:</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">import</span> angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> MarvelModule from <span class="hljs-string">'./services/marvel/marvel.module'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'myAwesomeApp'</span>, [
+        MarvelModule.name
+    ]);
+</code></pre>
+<h2 id="on-using-class" class="Header--withAnchor"><a href="#on-using-class" aria-hidden="true">#</a>On using <code>class</code></h2>
+<p>The in­tro­duc­tion of <code>class</code> al­lows us to write a lot of our An­gu­lar mod­ules as such. Be­low are ex­am­ples how you can im­ple­ment ser­vices, con­trollers and di­rec­tives as classes, fol­lowed by some re­marks about what other ob­jects can be im­ple­mented as classes or re­main reg­u­lar func­tions.</p>
+<h3 id="service" class="Header--withAnchor"><a href="#service" aria-hidden="true">#</a>Service</h3>
+<p>Since ser­vices in An­gu­lar are fol­low­ing the con­struc­tor pat­tern<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> im­ple­ment­ing them as a <code>class</code> is straight for­ward:</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: services/marvel/marvel-api.service.ts</span>
+<span class="hljs-keyword">import</span> angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> MARVEL_CONFIG from <span class="hljs-string">'./marvel.config'</span>;
+
+<span class="hljs-keyword">class</span> MarvelApi {
+    <span class="hljs-keyword">public</span> $http:ng.IHttpService;
+
+    <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>( $http:ng.IHttpService ) </span>{
+        <span class="hljs-keyword">this</span>.$http = $http;
+    }
+
+    getSuggestions ( query:<span class="hljs-built_in">string</span> ) {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.$http.get(
+           `${MARVEL_CONFIG.base}${MARVEL_CONFIG.characters}?nameStartsWith=${query}`
+        );
+    }
+}
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: services/marvel/marvel.module.ts</span>
+<span class="hljs-keyword">import</span> * as angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> MarvelApi from <span class="hljs-string">'./marvel-api.service'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'whiz.marvel'</span>, [])
+    .service(<span class="hljs-string">'MarvelApi'</span>, MarvelApi);
+
+</code></pre>
+<h3 id="controller" class="Header--withAnchor"><a href="#controller" aria-hidden="true">#</a>Controller</h3>
+<p>Im­ple­ment­ing con­trollers is as sim­ple as ser­vices, be­cause they are also con­struc­tors:</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: app/app.controller.ts</span>
+<span class="hljs-keyword">import</span> MarvelApi from <span class="hljs-string">'../services/marvel/marvel-api.service'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> AppController {
+    <span class="hljs-keyword">public</span> api:MarvelApi;
+    <span class="hljs-keyword">public</span> sugesstions:<span class="hljs-built_in">string</span>[] = [];
+
+    <span class="hljs-constructor"><span class="hljs-keyword">constructor</span>( MarvelApi:MarvelApi ) </span>{
+        <span class="hljs-keyword">this</span>.api = MarvelApi;
+    }
+
+    fetchSuggestions( query:<span class="hljs-built_in">string</span> ) {
+        <span class="hljs-keyword">this</span>.api.getSuggestions( query )
+            .then( (suggestions) =&gt; {
+                <span class="hljs-keyword">this</span>.sugesstions = sugesstions;
+            });
+    }
+}
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: app/app.module.ts</span>
+<span class="hljs-keyword">import</span> * as angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> AppController from <span class="hljs-string">'./app.controller'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'app'</span>, [])
+    .service(<span class="hljs-string">'AppController'</span>, AppController);
+</code></pre>
+<h3 id="direcitve" class="Header--withAnchor"><a href="#direcitve" aria-hidden="true">#</a>Direcitve</h3>
+<p>Im­ple­ment­ing di­rec­tives with the <code>class</code> syn­tax is a lit­tle bit dif­fer­ent be­cause An­gu­lar’s <code>.directive</code> API ex­pect a fac­tory rather than a con­struc­tor. The dif­fer­ence be­tween those two is very sut­tle. A con­struc­tor is an ob­ject that in­sta­ni­ates with the <code>new</code> key­word, while a fac­tory will <em>return</em> a new in­stance of the ob­ject.</p>
+<p>There is no clear win­ner (yet?) among the op­tions. So choose the style that suits you best. It is more im­por­tant that every­one in your team will use the same style in or­der to be con­sis­tent.</p>
+<h4 id="1-as-class-with-the-factory-in-the-directive-callback" class="Header--withAnchor"><a href="#1-as-class-with-the-factory-in-the-directive-callback" aria-hidden="true">#</a>(1) As class with the factory in the <code>.directive</code> callback</h4>
+<p>Your di­rec­tive de­f­i­n­i­tion ob­ject is im­ple­mented as a class with sta­tic prop­er­ties only. When reg­is­ter­ing the di­rec­tive with the An­gu­lar mod­ule sys­tem an an­nony­mous func­tion is called, which cre­ates a new in­stance.</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: components/say-hello/say-hello.component.ts</span>
+<span class="hljs-keyword">import</span> controller from <span class="hljs-string">'./say-hello.controller'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> SayHelloComponent <span class="hljs-keyword">implements</span> ng.IDirective {
+    restrict = <span class="hljs-string">'E'</span>;
+    scope = {};
+    template = <span class="hljs-string">'&lt;strong&gt;Good Day, {{ vm.name }}!!!&lt;/strong&gt;'</span>;
+    controller = controller;
+    controllerAs = <span class="hljs-string">'vm'</span>;
+    bindToController = {
+        name: <span class="hljs-string">'='</span>
+    };
+}
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: components/say-hello/say-hello.module.ts</span>
+<span class="hljs-keyword">import</span> angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> SayHelloComponent from <span class="hljs-string">'say-hello.component'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'hello'</span>, [])
+    .directive(<span class="hljs-string">'sayHello'</span>, () =&gt; <span class="hljs-keyword">new</span> SayHelloComponent());
+</code></pre>
+<h4 id="2-as-a-factory-with-a-static-create-method" class="Header--withAnchor"><a href="#2-as-a-factory-with-a-static-create-method" aria-hidden="true">#</a>(2) As a factory with a static <code>create</code> method</h4>
+<p>You de­fine your di­rec­tive as de­scribed in (1) and cre­ate a fac­tory class with a <code>create</code> method in the same file. Now you can reg­is­ter the fac­to­ry’s <code>create</code> method with An­gu­lar.</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: components/say-hello/say-hello.component.ts</span>
+<span class="hljs-keyword">import</span> controller from <span class="hljs-string">'./say-hello.controller'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> SayHelloComponent <span class="hljs-keyword">implements</span> ng.IDirective {
+    restrict = <span class="hljs-string">'E'</span>;
+    scope = {};
+    template = <span class="hljs-string">'&lt;strong&gt;Good Day, {{ vm.name }}!!!&lt;/strong&gt;'</span>;
+    controller = controller;
+    controllerAs = <span class="hljs-string">'vm'</span>;
+    bindToController = {
+        name: <span class="hljs-string">'='</span>
+    };
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> SayHelloFactory {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> create:ng.IDirectiveFactory = () =&gt; {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> SayHelloComponent();
+    }
+}
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: components/say-hello/say-hello.module.ts</span>
+<span class="hljs-keyword">import</span> angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> SayHelloFactory from <span class="hljs-string">'say-hello.component'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'hello'</span>, [])
+    .directive(<span class="hljs-string">'sayHello'</span>, SayHelloFactory.create);
+</code></pre>
+<h4 id="3-as-a-factory-function" class="Header--withAnchor"><a href="#3-as-a-factory-function" aria-hidden="true">#</a>(3) As a factory function</h4>
+<p>You de­fine your di­rec­tive as de­scribed in (1) and cre­ate a ded­i­cated fac­tory method in the same file. Af­ter that you reg­is­ter the ex­ported  func­tion as an An­gu­lar di­rec­tive.</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: components/say-hello/say-hello.component.ts</span>
+<span class="hljs-keyword">import</span> controller from <span class="hljs-string">'./say-hello.controller'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> SayHelloComponent <span class="hljs-keyword">implements</span> ng.IDirective {
+    restrict = <span class="hljs-string">'E'</span>;
+    scope = {};
+    template = <span class="hljs-string">'&lt;strong&gt;Good Day, {{ vm.name }}!!!&lt;/strong&gt;'</span>;
+    controller = controller;
+    controllerAs = <span class="hljs-string">'vm'</span>;
+    bindToController = {
+        name: <span class="hljs-string">'='</span>
+    };
+}
+
+<span class="hljs-keyword">let</span> SayHelloFactory:ng.IDirectiveFactory = () =&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> SayHelloComponent();
+}
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> SayHelloComponent;
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: components/say-hello/say-hello.module.ts</span>
+<span class="hljs-keyword">import</span> angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> SayHelloFactory from <span class="hljs-string">'say-hello.component'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'hello'</span>, [])
+    .directive(<span class="hljs-string">'sayHello'</span>, SayHelloFactory);
+</code></pre>
+<p>Note that in all the above cases you could cre­ate an ob­ject lit­eral in­stead. How­ever, cre­at­ing a class and ex­port­ing it will give you bet­ter ca­pa­bil­ity to thor­oughly test your di­rec­tive.</p>
+<h3 id="remaining-modules" class="Header--withAnchor"><a href="#remaining-modules" aria-hidden="true">#</a>Remaining Modules</h3>
+<p>Most of the time you will cre­ate con­trollers, ser­vices and di­rec­tive in An­gu­lar. But the re­main­der mod­ules have also their ap­pli­ca­tions. For in­stance, the <code>.provider</code> mod­ule is ex­tremly use­ful if you want to con­fig­ure your ser­vices and fac­to­ries.</p>
+<p>If you reg­is­ter a ser­vice or a fac­tory with An­gu­lar a provider is cre­ated. This provider will re­turn your ser­vice/​fac­tory when­ever its <code>$get</code> method is called. So ba­si­cally, be­hind the scences An­gu­lar will al­ways use the provider pat­tern to in­stan­ci­ate ser­vices and fac­to­ries.<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+<p>The Type­Script de­c­la­ra­tion file of An­gu­lar<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> knowns three types of providers even though they are not all di­rectly im­ple­mented in An­gu­lar:</p>
+<pre><code class="hljs typescript">    <span class="hljs-interface"><span class="hljs-keyword">interface</span> IServiceProvider </span>{
+        $<span class="hljs-keyword">get</span>: <span class="hljs-built_in">any</span>;
+    }
+
+    <span class="hljs-interface"><span class="hljs-keyword">interface</span> IServiceProviderClass </span>{
+        <span class="hljs-keyword">new</span> (...args: <span class="hljs-built_in">any</span>[]): IServiceProvider;
+    }
+
+    <span class="hljs-interface"><span class="hljs-keyword">interface</span> IServiceProviderFactory </span>{
+        (...args: <span class="hljs-built_in">any</span>[]): IServiceProvider;
+    }
+</code></pre>
+<p><code>IServiceProvider</code> is the base in­ter­face and what you will use when cre­at­ing a provider with the <code>class</code> syn­tax. The other two de­c­la­ra­tions are re­quired for the <code>.provider</code> API, e.g. <code>IServiceProviderClass</code> en­ables you to reg­is­ter a class with <code>module.provider('SayHello', new SayHelloProvider())</code>.</p>
+<p>Thus, writ­ing a provider as a class is pretty straight for­ward. But be care­ful. Cur­rently the de­c­la­ra­tion file al­lows <code>any</code> as re­turn type of <code>$get</code>, which makes <code>void</code> a valid re­turn value. So be care­ful and make sure <code>$get</code> re­turns a con­struc­tor or a fac­tory.</p>
+<p>Dec­o­rat­ing mod­ules via <code>.decorator</code> should be done with a func­tion, since the dec­o­ra­tor has to re­turn the <code>$delegate</code> (orig­i­nal ser­vice) or or a new ser­vice ob­ject which re­places or wraps and del­e­gates to the orig­i­nal ser­vice.<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+<p>The <code>.value</code> and <code>.constant</code> should used with their cor­re­spond­ing JavaScript key­word <code>let</code>/<code>var</code> and <code>const</code>.</p>
+<h3 id="using-classes-elsewhere" class="Header--withAnchor"><a href="#using-classes-elsewhere" aria-hidden="true">#</a>Using Classes elsewhere</h3>
+<p>There are even more op­pur­tu­ni­ties to use classes in your An­gu­lar ap­pli­ca­tion. If you are us­ing <code>ngAnimate</code> and reg­is­ter an­i­ma­tions you can use the pre­vi­ously in­tro­duced <a href="#1-as-class-with-the-factory-in-the-directive-callback">pattern (1)</a> in or­der to cre­ate de­clar­a­tive an­i­ma­tion ob­jects. An­other com­mon use case are HTTP in­ter­cep­tors. Their pur­pose is to per­form some ad­di­tional tasks on cer­tain XHR events (<code>request</code>, <code>requestError</code>, <code>response</code>, <code>responseError</code>).</p>
+<p>The Mar­vel de­vel­oper API will only suc­cess­fully re­solve your re­quest if you API key was send as a get pa­ra­me­ter. The re­quest in­ter­cep­tor, which al­ways adds the key to the re­quest pa­ra­me­ters, could look like this:</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: service/marvel/marvel-key.interceptor.ts</span>
+<span class="hljs-keyword">import</span> MARVEL_API_KEY from <span class="hljs-string">'marvel.key'</span>;
+<span class="hljs-keyword">import</span> MARVEL_CONFIG from <span class="hljs-string">'./marvel.config'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> MarvelKeyInterceptor {
+    request ( config:ng.IRequestConfig ) {
+        <span class="hljs-comment">// Request pings Marvel API?</span>
+        <span class="hljs-keyword">if</span>( config.url.startsWith(MARVEL_CONFIG.base) ) {
+            <span class="hljs-keyword">if</span>( !config.params ) {
+                config.params = {};
+            }
+            config.params.apikey = MARVEL_API_KEY;
+        }
+        <span class="hljs-keyword">return</span> config;
+    }
+}
+</code></pre>
+<p>Reg­is­tra­tion of the <code>MarvelKeyInterceptor</code> with An­gu­lar’s <code>$http</code> ser­vice can be done like shown be­low.</p>
+<pre><code class="hljs typescript"><span class="hljs-comment">// Path: service/marvel/marvel.module.ts</span>
+<span class="hljs-keyword">import</span> * as angular from <span class="hljs-string">'angular'</span>;
+<span class="hljs-keyword">import</span> MarvelKeyInterceptor from <span class="hljs-string">'./marvel-key.interceptor'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> angular
+    .module(<span class="hljs-string">'marvel'</span>, [])
+    .config([<span class="hljs-string">'$httpProvider'</span>, ( provider:ng.IHttpProvider ) =&gt;  {
+        provider.interceptors.push(() =&gt; <span class="hljs-keyword">new</span> MarvelKeyInterceptor());
+    }]);
+</code></pre>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="http://www.2ality.com/2014/09/es6-modules-final.html">Dr. Axel Rauschmayer - ECMAScript 6 modules: the final syntax</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="http://addyosmani.com/resources/essentialjsdesignpatterns/book/#constructorpatternjavascript">Addy Osmani - Learning JavaScript Design Patterns</a> <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="http://blog.thoughtram.io/angular/2015/07/07/service-vs-factory-once-and-for-all.html">Pascal Precht - Service vs Factory - Once and for all</a> <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a href="https://github.com/borisyankov/DefinitelyTyped/blob/master/angularjs/angular.d.ts">Definitely Typed - AngularJS</a> <a href="#fnref4" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a href="https://docs.angularjs.org/api/auto/service/$provide#decorator">Angular Documentation - <code>$provide</code></a> <a href="#fnref5" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Coding Styles" href="../../typescript/4_coding_styles/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+        <div class="Article-next">
+            <a class="Article-link" data-title="Good Practices" href="../2_good_practices/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Fri Aug 07 2015 13:49:59 GMT+0200 (CEST)">Fri Aug 07 2015 13:49:59 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    
+
+</body></html>
