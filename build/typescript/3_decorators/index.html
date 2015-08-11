@@ -43,25 +43,48 @@
     <main>
     <article>
     	<h1>Decorators</h1>
-    	<p>Dec­o­ra­tors were in­tro­duced in Type­Script 1.5<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> and are also por­posed for ES­2016 by Yehuda Katz.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
-<h2 id="todo" class="Header--withAnchor"><a href="#todo" aria-hidden="true">#</a>TODO</h2>
-<ul>
-<li>what are decorators</li>
-<li>spec -&gt; can not be added to functions (only classes and class methods)</li>
-</ul>
+    	<p>Dec­o­ra­tors were in­tro­duced in Type­Script 1.5<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> and are also por­posed for ES­2016 by Yehuda Katz.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup> The pro­posal spec­i­fies a dec­o­ra­tor as a func­tion that makes it pos­si­ble to an­no­tate and mod­ify classes and their prop­er­ties at de­sign time.</p>
+<p>Im­ple­ment­ing the dec­o­ra­tor pat­tern is al­ready pos­si­ble in cur­rent JavaScript ver­sions by pass­ing an ob­ject or func­tion to a dec­o­ra­tor method. But the pro­posed syn­tax uses <code>@</code> as a pre­fix for the dec­o­ra­tor func­tion which would make ap­ply­ing dec­o­ra­tors very de­clar­a­tive.</p>
+<p>A look at Type­Scrip­t’s <code>core.d.ts</code><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup> show that there are cur­rently for dif­fer­ent types of dec­o­ra­tors:</p>
 <pre><code class="hljs typescript"><span class="hljs-keyword">declare</span> <span class="hljs-keyword">type</span> ClassDecorator = &lt;TFunction extends <span class="hljs-built_in">Function</span>&gt;(target: TFunction) =&gt; TFunction | <span class="hljs-built_in">void</span>;
 <span class="hljs-keyword">declare</span> <span class="hljs-keyword">type</span> PropertyDecorator = (target: <span class="hljs-built_in">Object</span>, propertyKey: <span class="hljs-built_in">string</span> | symbol) =&gt; <span class="hljs-built_in">void</span>;
 <span class="hljs-keyword">declare</span> <span class="hljs-keyword">type</span> MethodDecorator = &lt;T&gt;(target: <span class="hljs-built_in">Object</span>, propertyKey: <span class="hljs-built_in">string</span> | symbol, descriptor: TypedPropertyDescriptor&lt;T&gt;) =&gt; TypedPropertyDescriptor&lt;T&gt; | <span class="hljs-built_in">void</span>;
 <span class="hljs-keyword">declare</span> <span class="hljs-keyword">type</span> ParameterDecorator = (target: <span class="hljs-built_in">Object</span>, propertyKey: <span class="hljs-built_in">string</span> | symbol, parameterIndex: <span class="hljs-built_in">number</span>) =&gt; <span class="hljs-built_in">void</span>;
 </code></pre>
-<p>-&gt; <a href="https://github.com/Microsoft/TypeScript/blob/master/src/lib/core.d.ts">https://github.com/Microsoft/TypeScript/blob/master/src/lib/core.d.ts</a><br>
--&gt; <a href="https://github.com/Microsoft/TypeScript/issues/2249">https://github.com/Microsoft/TypeScript/issues/2249</a></p>
+<p>You can ap­ply a dec­o­ra­tor by prepend­ing it to what­ever you want to dec­o­rate. A sim­ple ex­am­ple is to make a class method read­only.<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> The fol­low­ing <code>readonly</code> func­tion im­ple­ments this by set­ting the <code>writable</code> prop­erty of the method to <code>false</code>. The sec­ond code snip­pet shows how the dec­o­ra­tor then is ap­plied to the <code>sayHello</code> method.</p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">export</span> readonly( target, key, descriptor ) {
+    descriptor.writable = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">return</span> descriptor;
+}
+</code></pre>
+<pre><code class="hljs typescript"><span class="hljs-keyword">import</span> { readonly } from <span class="hljs-string">'util/decorators'</span>;
+
+<span class="hljs-keyword">class</span> Person {
+    <span class="hljs-keyword">public</span> name:<span class="hljs-built_in">string</span>;
+
+    construcotr( name:<span class="hljs-built_in">string</span> ) {
+        <span class="hljs-keyword">this</span>.name = name;
+    }
+
+    @readonly
+    sayHello() {
+        <span class="hljs-keyword">return</span> `{Hello, my name is ${<span class="hljs-keyword">this</span>.name}}!`;
+    }
+}
+</code></pre>
+<p>The spec does not yet in­clude a dec­o­ra­tor for func­tions, be­cause hoist­ing makes it not pos­si­ble. Type­Script con­forms the cur­rent dec­o­ra­tor draft.<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup> Reg­u­lar func­tions can be dec­o­rated by wrap­ping the dec­o­ra­tor ar­round them, like <code>let decorateFn = decorator(myFunction);</code>.</p>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
 <li id="fn1" class="footnote-item"><p><a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#decorators">What's new in TypeScript</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
 </li>
 <li id="fn2" class="footnote-item"><p><a href="https://github.com/wycats/javascript-decorators">Yehuda Katz - JavaScript Decorators</a> <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>[https://​github.com/​Mi­crosoft/​Type­Script/​blob/​mas­ter/​src/​lib/​core.d.ts](Type­Script <code>core.d.ts</code>) <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841">Addy Osmani - Exploring ES7 Decorators</a> <a href="#fnref4" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a href="https://github.com/Microsoft/TypeScript/issues/2249">TypeScript Issue #2249 - Decorators</a> <a href="#fnref5" class="footnote-backref">↩</a></p>
 </li>
 </ol>
 </section>
@@ -87,7 +110,7 @@
         <footer-push></footer-push>
     </main>
     <footer>
-        <time datetime="Fri Aug 07 2015 14:59:24 GMT+0200 (CEST)">Fri Aug 07 2015 14:59:24 GMT+0200 (CEST)</time>
+        <time datetime="Tue Aug 11 2015 09:27:32 GMT+0200 (CEST)">Tue Aug 11 2015 09:27:32 GMT+0200 (CEST)</time>
     </footer>
 
     <script src="../../main.js"></script>
