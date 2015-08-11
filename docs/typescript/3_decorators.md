@@ -6,7 +6,7 @@ Decorators were introduced in TypeScript 1.5^[[What's new in TypeScript](https:/
 
 Implementing the decorator pattern is already possible in current JavaScript versions by passing an object or function to a decorator method. But the proposed syntax uses `@` as a prefix for the decorator function which would make applying decorators very declarative.
 
-A look at TypeScript's `core.d.ts`^[[https://github.com/Microsoft/TypeScript/blob/master/src/lib/core.d.ts](TypeScript `core.d.ts`)] show that there are currently for different types of decorators:
+A look at TypeScript's `core.d.ts`^[[TypeScript `core.d.ts`](https://github.com/Microsoft/TypeScript/blob/master/src/lib/core.d.ts)] show that there are currently for different types of decorators:
 
 ```typescript
 declare type ClassDecorator = <TFunction extends Function>(target: TFunction) => TFunction | void;
