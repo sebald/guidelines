@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="en"><head>
+	<meta charset="UTF-8">
+    <meta name="theme-color" content="#814d7c">
+
+	<title>Scroll Rack | Component Pattern</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link href="../../theme.css" rel="stylesheet">
+    <link href="../../style.css" rel="stylesheet">
+</head>
+<body>
+
+    <page-menu-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="-58.5 250.5 118 500" enable-background="new -58.5 250.5 118 500" xml:space="preserve">
+    <path d="M0.5 705.4L59.8 750.5V602.5v-92.6V250.5H-58.8v352h0.1L-58.8 750.5 0.5 705.4z"></path>
+</svg>
+
+    </page-menu-toggle>
+
+    <page-menu>
+        <page-menu-title>Table of Contents</page-menu-title>
+        <section-list>
+                <section-title><a href="../../preface.html">Preface</a></section-title>
+                <section-list-title>typescript</section-list-title>
+                <ul>
+                    <li><a href="../../typescript/0_introduction">Introduction</a></li>
+                    <li><a href="../../typescript/1_type_system">Type System</a></li>
+                    <li><a href="../../typescript/2_declaration_files">Declaration Files</a></li>
+                    <li><a href="../../typescript/3_decorators">Decorators</a></li>
+                    <li><a href="../../typescript/4_coding_styles">Coding Styles</a></li>
+                </ul>
+                <section-list-title>angular</section-list-title>
+                <ul>
+                    <li><a href="../0_modules">Modules</a></li>
+                    <li><a href="../1_di">Dependency Injection</a></li>
+                    <li><a href="../2_good_practices">Good Practices</a></li>
+                    <li><a href="">Component Pattern</a></li>
+                </ul>
+        </section-list>
+    </page-menu>
+    <page-menu-backdrop></page-menu-backdrop>
+
+    <main>
+    <article>
+    	<h1>Component Pattern</h1>
+    	<p>Writ­ing mod­u­lar and DRY<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup> code is a good habit. It will keep your soft­ware main­tan­able, help with test­ing and pro­duce parts that can be reused through­out your soft­ware. A pop­u­lar par­a­digm to achieve all this is the <em>component pattern</em>. The un­der­ly­ing idea of this pat­tern is to en­cap­su­late your code into iso­lated com­po­nents and thereby hav­ing small build­ing blocks which can be com­posed to build a full ap­pli­ca­tion.</p>
+<p>Seper­at­ing code into com­po­nents is noth­ing new. There is a whole branch of soft­ware en­gi­neer­ing, called “com­po­nent-based soft­ware en­gi­neer­ing”<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>, which em­pha­sises the use of com­po­nents to pre­serve seper­a­tion of con­cerns. The UML spec­i­fi­ca­tion for com­po­nents reads as fol­lows:<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+<blockquote>
+<p>A com­po­nent rep­re­sents a mod­u­lar part of a sys­tem that en­cap­su­lates its con­tents and whose man­i­fes­ta­tion is re­place­able within its en­vi­ron­ment.</p>
+<p>A com­po­nent de­fines its be­hav­ior in terms of pro­vided and re­quired in­ter­faces. As such, a com­po­nent serves as a type whose con­for­mance is de­fined by these pro­vided and re­quired in­ter­faces.</p>
+</blockquote>
+<p>With the rise of Re­act<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup> and the in­tro­duc­tion of Web Com­po­nents<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup> the com­po­nent pat­tern has gained a lot of mo­men­tum and is cur­rently seen as a best prac­tice for build­ing large JavaScript ap­pli­ca­tions. An­gu­lar 2 will also rely heav­ily on com­po­nents,<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup> so the em­pha­sis on com­po­nents will not only help struc­tur­ing our app, but will also make it eas­ier to mi­grate to An­gu­lar 2 once it is ready.</p>
+<p>If you trans­late the con­cept of com­po­nents to An­gu­lar 1.x, they are re­ally just di­rec­tives with an iso­lated scope, a con­troller and most of the time they also have a tem­plate. Com­mu­ni­ca­tion be­tween com­po­nents is han­dled with at­tribute bind­ings (<code>=</code>, <code>&amp;</code> and <code>@</code>) and the <code>require</code> prop­erty of  the di­rec­tive de­f­i­n­i­tion ob­ject.</p>
+<p>A fu­ture An­gu­lar re­lease will in­clude a <code>angular.component</code> helper, which will by de­fault cre­ate di­rec­tives that <code>bindToController</code> so that we do not have to write the di­rec­tive de­f­i­n­i­tion boil­er­plate every time.<sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup></p>
+<h2 id="container-components" class="Header--withAnchor"><a href="#container-components" aria-hidden="true">#</a>Container Components</h2>
+<p>Ja­son Bonta gave an ex­cel­lent talk in which he showed how to fur­ther im­prove the ap­pli­ca­tion ar­chi­tec­ture by dis­tin­guish­ing be­tween <em>components</em> and <em>containers</em>.<sup class="footnote-ref"><a href="#fn8" id="fnref8">[8]</a></sup> Es­sen­tially, con­tain­ers are re­spon­si­ble for fetch­ing data from the server or any other re­mote ser­vice. The re­sponse data is then passed to (child-)com­po­nents, which will process the data and ren­der markup. Com­po­nents are com­pletly data-ag­nos­tic. All of their in­put will be ob­tained through a par­ent con­tainer.</p>
+<p>While the talk is about Re­act the con­cept can also be ap­plied to An­gu­lar. Imag­ine an app, named <em>whiz</em>, that lets users as­sem­ble their own squad of Mar­vel char­ac­ters. It has a search field to query Mar­vel’s de­vel­oper API for char­ac­ters and every char­ac­ter whose name matches the search term will be dis­played in­side a re­sult list. Listed char­ac­ters can be se­lected by the user and added to her squad. Fur­ther­more, users can give their squad a name and re­move pre­vi­ously se­lected char­ac­ters. Squads are stored into <code>localStorage</code> and au­to­mat­i­cally loaded when the user re-opens the app.</p>
+<p>The be­low im­age shows a mockup of the app to bet­ter en­vi­sion what the <em>whiz</em> app may look like:</p>
+<p><img src="../../assets/whiz-mock.png" alt="Whiz Mock"></p>
+<p>Stick­ing to the afore­men­tioned pat­tern the markup would con­sist of two con­tain­ers, which is il­lus­trated by the green rec­tan­gles. The left con­tainer hosts the search and dis­play of Mar­vel char­ac­ters. As well as a con­trol to add char­ac­ters to the squad. The right con­tainer con­sists of a text field to en­ter a name for the squad and a list with all the squad mem­bers. Mem­bers can be re­moved via a con­trol.</p>
+<p>Markup for the base tem­plate is shown be­low, fol­lowed by the con­tainer tem­plates.</p>
+<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- base template --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">whiz-app</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">whiz-character-search-container</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">whiz-character-search-container</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-title">whiz-squad-conatiner</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">whiz-squad-container</span>&gt;</span>
+
+<span class="hljs-tag">&lt;/<span class="hljs-title">whizz-app</span>&gt;</span>
+</code></pre>
+<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- whiz-character-search-container template --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">field-search</span>
+    <span class="hljs-attribute">placeholder</span>=<span class="hljs-value">"Search by character name..."</span>
+    <span class="hljs-attribute">on-change</span>=<span class="hljs-value">"vm.handleQuery(text)"</span>
+&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">field-search</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">marvel-character-list</span>
+    <span class="hljs-attribute">list</span>=<span class="hljs-value">"vm.list"</span>
+    <span class="hljs-attribute">on-select</span>=<span class="hljs-value">"vm.handleSelect(character)"</span>
+&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">marvel-character-list</span>&gt;</span>
+</code></pre>
+<pre><code class="hljs html"><span class="hljs-comment">&lt;!-- whiz-squad-container template --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">field-text</span>
+    <span class="hljs-attribute">label</span>=<span class="hljs-value">"Name"</span>
+    <span class="hljs-attribute">on-change</span>=<span class="hljs-value">"vm.handleChange(text)"</span>
+&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">field-text</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-title">marvel-character-list</span>
+    <span class="hljs-attribute">list</span>=<span class="hljs-value">"vm.members"</span>
+    <span class="hljs-attribute">on-remove</span>=<span class="hljs-value">"vm.handleDelete(character)"</span>
+&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">marvel-character-list</span>&gt;</span>
+</code></pre>
+<p>The <code>&lt;whiz-app&gt;</code> boot­straps the con­tain­ers. But most of the markup and logic is hosted by con­tain­ers and their child-com­po­nents. Both con­tainer use the same com­po­nent to dis­play the char­ac­ter list (<code>&lt;marvel-character-list&gt;</code>), but with dif­fer­ent con­fig­u­ra­tions. The <code>&lt;whiz-character-search-container&gt;</code> uses the <code>[on-select]</code> call­back to add char­ac­ters to the squad. The <code>&lt;whiz-squad-conatiner&gt;</code> uses the <code>[on-remove]</code> bind­ing to re­move chrac­ters from the squad.</p>
+<p>→ clear seper­a­tion of con­cerns</p>
+<ul>
+<li>the <code>&lt;field-*&gt;</code> components are only concerned with user input and have callback methods to forward certain events.</li>
+<li>Data-related actions are handeled by the parent container.</li>
+<li><code>&lt;marvel-character-list&gt;</code> can be used by mutiple containers with different configuration.</li>
+</ul>
+<hr>
+<h2 id="directive-types" class="Header--withAnchor"><a href="#directive-types" aria-hidden="true">#</a>Directive Types</h2>
+<p>-&gt; goes hand in hand with not us­ing <code>ng-controller</code> and <code>ng-include</code>.</p>
+<h3 id="container" class="Header--withAnchor"><a href="#container" aria-hidden="true">#</a>Container</h3>
+<ul>
+<li>API calls</li>
+<li>Interaction handler</li>
+<li>maintains model</li>
+</ul>
+<h3 id="section" class="Header--withAnchor"><a href="#section" aria-hidden="true">#</a>Section</h3>
+<ul>
+<li>Break applications in smaller parts</li>
+<li>not-resusable</li>
+<li>DSL -&gt; describes our Components in our application (example no &lt;div&gt;-soup -&gt; ProductView …)</li>
+<li>less lines of code and complexity</li>
+<li>A Page can be constructed out of several sections that describe the Page.</li>
+</ul>
+<h3 id="widget" class="Header--withAnchor"><a href="#widget" aria-hidden="true">#</a>Widget</h3>
+<ul>
+<li>super small</li>
+<li>rusable</li>
+<li>only have ONE purpose</li>
+<li>data-agnostic</li>
+</ul>
+<hr>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p><a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">Wikipedia - Don't repeat yourself</a> <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p><a href="https://en.wikipedia.org/wiki/Component-based_software_engineering">Wikipedia - Component-based software engineering</a> <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p><a href="http://www.omg.org/spec/UML/2.1.2/Superstructure/PDF">OMG Unified Modeling Language (OMG UML), Superstructure, V2.1.2</a> <a href="#fnref3" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p><a href="http://facebook.github.io/react/docs/thinking-in-react.html">React - Thinking in React</a> <a href="#fnref4" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p><a href="http://www.w3.org/TR/components-intro/">W3C - Introduction to Web Components</a> <a href="#fnref5" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn6" class="footnote-item"><p><a href="http://blog.ionic.io/angular-2-series-components/">Ionic - Angular 2 Series: Components</a> <a href="#fnref6" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn7" class="footnote-item"><p><a href="https://github.com/angular/angular.js/pull/12166">Github PR - <code>angular.component</code></a> <a href="#fnref7" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn8" class="footnote-item"><p><a href="https://www.youtube.com/watch?v=KYzlpRvWZ6c&amp;feature=youtu.be&amp;t=22m23s">React.js Conf 2015 - Making your app fast with high-performance components</a> <a href="#fnref8" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+
+    </article>
+    <article-footer>
+        <div class="Article-prev">
+            <a class="Article-link" data-title="Good Practices" href="../2_good_practices/">
+                <svg height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+</svg>
+            </a>
+        </div>
+    </article-footer>
+
+        <footer-push></footer-push>
+    </main>
+    <footer>
+        <time datetime="Mon Aug 17 2015 14:21:18 GMT+0200 (CEST)">Mon Aug 17 2015 14:21:18 GMT+0200 (CEST)</time>
+    </footer>
+
+    <script src="../../main.js"></script>
+    <script src="http://localhost:35729/livereload.js"></script>
+
+</body></html>

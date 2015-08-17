@@ -10,7 +10,8 @@ var gulp = require('gulp'),
 // Config
 var path = {
     files: 'docs/',
-    dest: 'build'
+    dest: 'build',
+    assets: 'assets'
 }
 
 
@@ -32,6 +33,7 @@ gulp.task('build', function ( done ) {
     scrollrack({
         files: path.files,
         dest: path.dest,
+        assets: path.assets,
         nav: {
             order: ['typescript', 'angular', 'coding']
         },
