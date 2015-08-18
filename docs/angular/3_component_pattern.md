@@ -26,9 +26,9 @@ The below image shows a mockup of the app to better envision what the *whiz* app
 
 ![Whiz Mock](/assets/whiz-mock.png)
 
-Sticking to the aforementioned pattern the markup would consist of two containers, which is illustrated by the green rectangles. The left container hosts the search and display of Marvel characters. As well as a control to add characters to the squad. The right container consists of a text field to enter a name for the squad and a list with all the squad members. Members can be removed via a control.
+Sticking to the aforementioned pattern the app would consist of two containers, which is indicated by the green rectangles. The left container hosts the search and display of Marvel characters, as well as a control to add characters to the squad. The right container consists of a text field to enter a name for the squad and a list with all the squad members. Members can be removed via a dedicated control.
 
-Markup for the base template is shown below, followed by the container templates.
+The markup follows the same structure. It consists of the `<whiz-app>`, which hosts two containers `<marvel-character-list>` and `<whiz-character-search-container>`:
 
 ```html
 <!-- base template -->
@@ -43,8 +43,12 @@ Markup for the base template is shown below, followed by the container templates
 </whizz-app>
 ```
 
+While the `<whiz-app>` element bootstraps the app,  most of the markup and logic is hosted by containers and their child-components. As you can see in the markup below, both container use the same component to display the character list (`<marvel-character-list>`), but with different configurations. The `<whiz-character-search-container>` uses the `[on-select]` callback to add characters to the squad. The `<whiz-squad-conatiner>` uses the `[on-remove]` binding to remove chracters from the squad.
+
+The `<field-*>` components are only concerned with user input and have callback methods to forward certain events. In this case the `change` event. Their only purpose is to display `<input>` elements for the user. The model updates are handled by the parent containers via the callbacks.
+
 ```html
-<!-- whiz-character-search-container template -->
+<!-- template: whiz-character-search-container -->
 <field-search
     placeholder="Search by character name..."
     on-change="vm.handleQuery(text)"
@@ -59,7 +63,7 @@ Markup for the base template is shown below, followed by the container templates
 ```
 
 ```html
-<!-- whiz-squad-container template -->
+<!-- template: whiz-squad-container -->
 <field-text
     label="Name"
     on-change="vm.handleChange(text)"
@@ -73,43 +77,143 @@ Markup for the base template is shown below, followed by the container templates
 </marvel-character-list>
 ```
 
-The `<whiz-app>` bootstraps the containers. But most of the markup and logic is hosted by containers and their child-components. Both container use the same component to display the character list (`<marvel-character-list>`), but with different configurations. The `<whiz-character-search-container>` uses the `[on-select]` callback to add characters to the squad. The `<whiz-squad-conatiner>` uses the `[on-remove]` binding to remove chracters from the squad.
+Because of the way the app is laid out a clear seperation of concerns is acchieved. Every element has one role to fulfill and nothing more. Data-related actions are handled exclusively by a container. The components are communicating with each other via APIs. All thanks to sticking to the *component pattern*.
 
---> clear seperation of concerns
+## Component Types
 
-- the `<field-*>` components are only concerned with user input and have callback methods to forward certain events.
-- Data-related actions are handeled by the parent container.
-- `<marvel-character-list>` can be used by mutiple containers with different configuration.
+Differentiating between *containers* and *components* is an important step to improve the structre of an application. But the naming convention maybe a bit confusing, because containers are also components. So you actually have *container components* and *components components*.
+
+Calling a component "component" is not really conclusive. Hence, we are calling this type of component *widgets*. Because this is what they really are. Small, dedicated and reusable elements which are independent of your apps domain. Recall the `<field-text>` element from the previous example. It is not a term affiliated with "Marvel", but containers like `<marvel-character-list>` certainly contain domain specific language.
+
+Furthermore, page templates tend to get very large, which will make it hard to maintain and test them. Also, the attached controller becomes often very large and equality hard to maintain. To cope with that it is a good idea to split large pages into mutiple components.
+
+The sole purpose of these components is to add another level of abstraction that groups and hides complex parts of a page. You should use domain specific language to make it obvious what the content of the section is. For example, naming a section `user-adress-section` makes it very obvious what part of your app is repesented through this section. Unlike *widgets* sections are usually not re-usable.
+
+This leaves us with another type of component: the *section component*. Hence, we can classify components into one of the following three categories:
+
+### 1. Container
+
+- Responsible for fetching data
+- Maintains and updates model
+- Exposes methods to handle user interactions
+
+### 2. Section
+
+- Break large templates into smaller parts
+- Several sections construct a page
+- Domain specific used to describe purpose
+- Not reusable
+
+### 3. Widget
+
+- Smallest component type
+- Highly reusable
+- Data-agnostic
+- Renders markup
+
+## Handling User Interactions
+
+As long as your model and application logic stays small two-way data binding is your best friend. But as soon as your model and logic become more complex it will be hard to understand and control the data flow. Especially if there are `$watchers` that update the application state or manipulate the model you may end up in a lengthy search for Waldo.
+
+Instead of relying on Angular's integrated two-way bindings you should implement an unidirectional data flow.^[[Victor Savkin - Two Phases of Angular 2 Applications](http://victorsavkin.com/post/114168430846/two-phases-of-angular-2-applications)] A unidirectional flow integrates nicely with the container pattern, because only a container should be able to mutate the data model or application state. It will also be possible to backtrace what part of the applications want to push an update to a model or change the state.
+
+The previously shown containers of the *whiz* app implement this approach. All widgets expose callback methods for the container to use and handle changes. Below is the part of the `<marvel-character-list>` controller, which shows how the `handleSelect` method is implemented:
+
+```typescript
+export default class WhizSquadContainerController {
+    public squad:SquadService;
+
+    constructor ( squad:SquadService ) {
+        this.squad = squad;
+    }
+
+    handleSelect ( character:MarvelCharacter ) {
+        this.squad.addCharacter(chracter);
+    }
+}
+```
+
+```html
+<!-- template: marvel-character-list -->
+<ul>
+    <li ng-repeat="character in vm.list">
+
+        <marvel-character-avatar
+            img="character.avatar"
+        ></marvel-character-avatar>
+
+        <strong>{{ character.name }}</strong>
+
+        <p>{{ character.description }}</p>
+
+        <button
+            type="button"
+            ng-click="vm.select(character)"
+        >Add</button>
+
+    </li>
+</ul>
+```
+
+```typescript
+import controller from './marve-character-list.controller';
+
+export default class MarvelCharacterList implements ng.IDirective {
+    restrict = 'E';
+    scope = {};
+    templateUrl = 'components/marvel/marvel-character-list.html';
+    controller = controller;
+    controllerAs = 'vm';
+    bindToController = {
+        list: '=',
+        onSelect: '&'
+    };
+}
+```
+
+```typescript
+export default MarvelCharacterListController {
+    public list:MarvelCharacter[];
+
+    select ( character:MarvelCharacter ) {
+        this.onSelect( character );
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 ---
 
-## Directive Types
-
--> goes hand in hand with not using `ng-controller` and `ng-include`.
-
-### Container
-
-- API calls
-- Interaction handler
-- maintains model
-
-### Section
-
-- Break applications in smaller parts
-- not-resusable
-- DSL -> describes our Components in our application (example no <div>-soup -> ProductView ...)
-- less lines of code and complexity
-- A Page can be constructed out of several sections that describe the Page.
-
-### Widget
-
-- super small
-- rusable
-- only have ONE purpose
-- data-agnostic
-
----
+--> **TODO:** Reactive Extensions!!!
 
