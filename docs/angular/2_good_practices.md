@@ -143,7 +143,7 @@ define('<say-hello>', () => {
 
 ## Slim and focused Controllers
 
-In order to keep your code DRY^[[Wikipedia - Don't repeat yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)] you should defer application logic into services. This way you have reusable pieces and your controllers are slim, focused and maintanable.^[[John Papa - Angular Styleguide: Defer Controller Logic to Services](https://github.com/johnpapa/angular-styleguide#defer-controller-logic-to-services)]
+In order to keep your code DRY^[[Wikipedia - Don't repeat yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)] you should defer application logic into services. This way you have reusable pieces and your controllers are slim, focused and maintanable.^[[John Papa - Angular Styleguide: Defer Controller Logic to Services](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#style-y035)]
 
 A common case for this is fetching data from the server. Instead of using the `$http` services inside a controller the implementation details should be hidden away in a seperate service. This is especially true if the JSON response needs some additional transformations before you can use it as model.
 
